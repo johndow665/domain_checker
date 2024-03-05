@@ -38,12 +38,13 @@ func main() {
 	// Запуск горутин
 	for i := 0; i < *threads; i++ {
 		wg.Add(1)
-		go func() {
+		threadID := i + 1 // Нумерация потоков начинается с 1
+		go func(id int) {
 			defer wg.Done()
 			for domain := range domains {
-				checkDomain(domain)
+				checkDomain(domain, id)
 			}
-		}()
+		}(threadID)
 	}
 
 	// Получение списка файлов в папке domains
@@ -74,12 +75,15 @@ func main() {
 }
 
 // checkDomain проверяет домен на валидность и записывает результат в соответствующий файл
-func checkDomain(domain string) {
+func checkDomain(domain string, threadID int) {
+	fmt.Printf("Поток %d: проверяю домен %s...\n", threadID, domain)
 	conn, err := net.DialTimeout("tcp", domain+":80", dialTimeout)
 	if err != nil {
+		fmt.Printf("Поток %d: домен %s не ответил в течение %v, кладу в невалидные.\n", threadID, domain, dialTimeout)
 		writeToFile(filepath.Join(invalidDir, "invalid.txt"), domain+"\n")
 	} else {
 		conn.Close()
+		fmt.Printf("Поток %d: домен %s валидный, кладу в валидные.\n", threadID, domain)
 		writeToFile(filepath.Join(validDir, "valid.txt"), domain+"\n")
 	}
 }
