@@ -11,3 +11,8 @@ dom3.com
 Запуск
 
 main.exe -threads=5
+
+
+Билд из исходника
+
+go build main.go
