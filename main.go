@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -26,6 +27,8 @@ func main() {
 	// Парсинг количества потоков из аргументов командной строки
 	threads := flag.Int("threads", 1, "number of threads to use")
 	flag.Parse()
+
+	go printStatus(*threads) // Запускаем печать статуса в отдельной горутине
 
 	createDirIfNotExist(logsDir) // Убедитесь, что папка logs существует
 	createDirIfNotExist(validDir)
@@ -84,11 +87,25 @@ func main() {
 	wg.Wait()
 }
 
-// logMessage логирует сообщение в консоль и файл
-func logMessage(message string) {
-	// Вывод в консоль
-	fmt.Print(message)
+func printStatus(threads int) {
+	for {
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+		// Сохраняем позицию курсора
+		fmt.Print("\033[s")
+		// Перемещаем курсор в начало строки, на две строки вверх
+		fmt.Print("\033[2A\033[K")
+		// Печатаем статус
+		fmt.Printf("Запущено потоков: %d   Жрет оперативки: %.2fGB\n", threads, float64(m.Alloc)/1024/1024/1024)
+		// Восстанавливаем позицию курсора
+		fmt.Print("\033[u")
+		time.Sleep(1 * time.Second)
+	}
+}
 
+// logMessage логирует сообщение в консоль и файл
+// logMessage логирует сообщение только в файл
+func logMessage(message string) {
 	// Логирование в файл
 	writeToFile(filepath.Join(logsDir, logsFile), message)
 }
@@ -100,14 +117,14 @@ func checkDomain(domain string, threadID int) {
 	conn, err := net.DialTimeout("tcp", domain+":80", dialTimeout)
 	if err != nil {
 		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
-			fmt.Printf("%s Поток %d: Прошло %v, ответа от %s нет.\n", currentTime, threadID, dialTimeout, domain)
+			//	fmt.Printf("%s Поток %d: Прошло %v, ответа от %s нет.\n", currentTime, threadID, dialTimeout, domain)
 		} else {
-			fmt.Printf("%s Поток %d: Не установил соединение с %s - ответ: %v\n", currentTime, threadID, domain, err)
+			//		fmt.Printf("%s Поток %d: Не установил соединение с %s - ответ: %v\n", currentTime, threadID, domain, err)
 		}
 		writeToFile(filepath.Join(invalidDir, "invalid.txt"), domain+"\n")
 	} else {
 		defer conn.Close()
-		fmt.Printf("%s Поток %d: Установил соединение с %s - ответ: соединение установлено\n", currentTime, threadID, domain)
+		//	fmt.Printf("%s Поток %d: Установил соединение с %s - ответ: соединение установлено\n", currentTime, threadID, domain)
 		writeToFile(filepath.Join(validDir, "valid.txt"), domain+"\n")
 	}
 }
