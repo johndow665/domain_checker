@@ -27,21 +27,17 @@ func main() {
 	threads := flag.Int("threads", 1, "number of threads to use")
 	flag.Parse()
 
-	// Создание папок для валидных и невалидных доменов, если они не существуют
+	createDirIfNotExist(logsDir) // Убедитесь, что папка logs существует
 	createDirIfNotExist(validDir)
 	createDirIfNotExist(invalidDir)
-	createDirIfNotExist(logsDir)
 
-	// Создание канала для доменов
 	domains := make(chan string)
 
-	// Создание WaitGroup для ожидания завершения всех горутин
 	var wg sync.WaitGroup
 
-	// Запуск горутин
 	for i := 0; i < *threads; i++ {
 		wg.Add(1)
-		threadID := i + 1 // Нумерация потоков начинается с 1
+		threadID := i + 1
 		go func(id int) {
 			defer wg.Done()
 			for domain := range domains {
@@ -50,34 +46,40 @@ func main() {
 		}(threadID)
 	}
 
-	// Получение списка файлов в папке domains
-	files, err := ioutil.ReadDir(domainsDir)
-	if err != nil {
-		fmt.Println("Error reading domains directory:", err)
-		return
+	// Бесконечный цикл для обработки доменов
+	for {
+		files, err := ioutil.ReadDir(domainsDir)
+		if err != nil {
+			logMessage(fmt.Sprintf("Error reading domains directory: %v\n", err))
+			break
+		}
+
+		if len(files) == 0 {
+			logMessage("Нет файлов в папке domains для проверки.\n")
+			break
+		}
+
+		// Обработка всех файлов в директории domains
+		for _, file := range files {
+			fileName := file.Name()
+			for {
+				domain, err := readAndRemoveRandomLine(filepath.Join(domainsDir, fileName))
+				if err != nil {
+					if err.Error() == "file is empty" {
+						logMessage(fmt.Sprintf("Файл %s пуст.\n", fileName))
+						break // Переход к следующему файлу, если текущий пуст
+					}
+					logMessage(fmt.Sprintf("Error reading/removing line from file: %v\n", err))
+					break
+				}
+				domains <- domain
+			}
+		}
+
+		// Пауза перед следующей итерацией цикла
+		time.Sleep(1 * time.Second)
 	}
 
-	if len(files) == 0 {
-		fmt.Println("Нет файлов в папке domains для проверки.")
-		return
-	}
-
-	// Выбор случайного файла и случайной строки из этого файла
-	rand.Seed(time.Now().UnixNano())
-	randomFileIndex := rand.Intn(len(files))
-	fileName := files[randomFileIndex].Name()
-
-	// Чтение и удаление случайной строки из файла
-	domain, err := readAndRemoveRandomLine(filepath.Join(domainsDir, fileName))
-	if err != nil {
-		fmt.Println("Error reading/removing line from file:", err)
-		return
-	}
-
-	// Отправка домена в канал
-	domains <- domain
-
-	// Закрытие канала и ожидание завершения всех горутин
 	close(domains)
 	wg.Wait()
 }
