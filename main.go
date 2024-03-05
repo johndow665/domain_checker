@@ -116,15 +116,15 @@ func checkDomain(domain string, threadID int) {
 	logMessage(fmt.Sprintf("%s Поток %d: Устанавливаю соединение с %s...\n", currentTime, threadID, domain))
 	conn, err := net.DialTimeout("tcp", domain+":80", dialTimeout)
 	if err != nil {
-		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
-			//	fmt.Printf("%s Поток %d: Прошло %v, ответа от %s нет.\n", currentTime, threadID, dialTimeout, domain)
-		} else {
-			//		fmt.Printf("%s Поток %d: Не установил соединение с %s - ответ: %v\n", currentTime, threadID, domain, err)
-		}
+		logMsg := fmt.Sprintf("%s Поток %d: Не установил соединение с %s - ошибка: %v\n", currentTime, threadID, domain, err)
+		logMsg += fmt.Sprintf("%s Поток %d: Отправляю %s в invalid\n", currentTime, threadID, domain)
+		logMessage(logMsg)
 		writeToFile(filepath.Join(invalidDir, "invalid.txt"), domain+"\n")
 	} else {
 		defer conn.Close()
-		//	fmt.Printf("%s Поток %d: Установил соединение с %s - ответ: соединение установлено\n", currentTime, threadID, domain)
+		logMsg := fmt.Sprintf("%s Поток %d: Установил соединение с %s - соединение установлено\n", currentTime, threadID, domain)
+		logMsg += fmt.Sprintf("%s Поток %d: Отправляю %s в valid\n", currentTime, threadID, domain)
+		logMessage(logMsg)
 		writeToFile(filepath.Join(validDir, "valid.txt"), domain+"\n")
 	}
 }
