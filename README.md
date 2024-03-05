@@ -6,3 +6,8 @@
 dom.com
 dom2.com
 dom3.com
+
+
+Запуск
+
+main.exe -threads=5
