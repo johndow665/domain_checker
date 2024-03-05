@@ -6650,7 +6650,6 @@ accenture-services.org
 accenture-solutions.org
 accenture-strategy.org
 accenture-technology.org
-accenture-trade.org
 accenture-usdt.org
 accenture.org
 accenture2.org
@@ -12186,7 +12185,6 @@ accreditedcertifications.org
 accreditedcertifiedcharter.org
 accreditedcharteredcourses.org
 accreditedchess.org
-accreditedcidspecialists.org
 accreditedclassesnearme.org
 accreditedcoachingassociation.org
 accreditedcoachtraining.org

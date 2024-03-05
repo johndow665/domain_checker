@@ -3373,7 +3373,6 @@
 16cowries.org
 16cubits.org
 16days.org
-16dayscampaign.org
 16daysofactivism.org
 16de8aad.org
 16degrees.org
@@ -8837,7 +8836,6 @@
 1centhosting.org
 1centshow.org
 1centstock.org
-1centstrom.org
 1cf.org
 1cfcu.org
 1cfcurewards.org

@@ -726,7 +726,6 @@
 2xme.org
 2xmille.org
 2xmission.org
-2xmoinscher.org
 2xmomentum.org
 2xmore.org
 2xnutrition.org
@@ -10207,7 +10206,6 @@
 3abnradio.org
 3abnradiomusicchannel.org
 3abnrecipes.org
-3abnsabbathschoolpanel.org
 3abnschoolfundraiser.org
 3abnsod.org
 3abnspark.org

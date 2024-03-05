@@ -757,7 +757,6 @@ aacohchiro.org
 aacohealth.org
 aacoho.org
 aacoi.org
-aacolean.org
 aacolegioinmaculada.org
 aacolombia.org
 aacolombiajapon.org
@@ -5183,7 +5182,6 @@ aaopenhand.org
 aaopfr.org
 aaophosts.org
 aaophotos.org
-aaophthalmicsurgery.org
 aaopl.org
 aaopm.org
 aaopmedia.org
@@ -7296,7 +7294,6 @@ aaroooo.org
 aaroosh.org
 aarooshpatil.org
 aaroovani.org
-aarora.org
 aaroregion.org
 aarose.org
 aaross.org
@@ -13168,7 +13165,6 @@ abc-ns.org
 abc-nys.org
 abc-of-aav.org
 abc-office24.org
-abc-ohio.org
 abc-online.org
 abc-or.org
 abc-ot.org

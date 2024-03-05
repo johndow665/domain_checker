@@ -18,6 +18,8 @@ const (
 	validDir    = "valid"
 	invalidDir  = "invalid"
 	dialTimeout = 5 * time.Second
+	logsDir     = "logs"
+	logsFile    = "logs.txt"
 )
 
 func main() {
@@ -28,6 +30,7 @@ func main() {
 	// Создание папок для валидных и невалидных доменов, если они не существуют
 	createDirIfNotExist(validDir)
 	createDirIfNotExist(invalidDir)
+	createDirIfNotExist(logsDir)
 
 	// Создание канала для доменов
 	domains := make(chan string)
@@ -54,6 +57,11 @@ func main() {
 		return
 	}
 
+	if len(files) == 0 {
+		fmt.Println("Нет файлов в папке domains для проверки.")
+		return
+	}
+
 	// Выбор случайного файла и случайной строки из этого файла
 	rand.Seed(time.Now().UnixNano())
 	randomFileIndex := rand.Intn(len(files))
@@ -74,16 +82,30 @@ func main() {
 	wg.Wait()
 }
 
+// logMessage логирует сообщение в консоль и файл
+func logMessage(message string) {
+	// Вывод в консоль
+	fmt.Print(message)
+
+	// Логирование в файл
+	writeToFile(filepath.Join(logsDir, logsFile), message)
+}
+
 // checkDomain проверяет домен на валидность и записывает результат в соответствующий файл
 func checkDomain(domain string, threadID int) {
-	fmt.Printf("Поток %d: проверяю домен %s...\n", threadID, domain)
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	logMessage(fmt.Sprintf("%s Поток %d: Устанавливаю соединение с %s...\n", currentTime, threadID, domain))
 	conn, err := net.DialTimeout("tcp", domain+":80", dialTimeout)
 	if err != nil {
-		fmt.Printf("Поток %d: домен %s не ответил в течение %v, кладу в невалидные.\n", threadID, domain, dialTimeout)
+		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+			fmt.Printf("%s Поток %d: Прошло %v, ответа от %s нет.\n", currentTime, threadID, dialTimeout, domain)
+		} else {
+			fmt.Printf("%s Поток %d: Не установил соединение с %s - ответ: %v\n", currentTime, threadID, domain, err)
+		}
 		writeToFile(filepath.Join(invalidDir, "invalid.txt"), domain+"\n")
 	} else {
-		conn.Close()
-		fmt.Printf("Поток %d: домен %s валидный, кладу в валидные.\n", threadID, domain)
+		defer conn.Close()
+		fmt.Printf("%s Поток %d: Установил соединение с %s - ответ: соединение установлено\n", currentTime, threadID, domain)
 		writeToFile(filepath.Join(validDir, "valid.txt"), domain+"\n")
 	}
 }
@@ -160,4 +182,5 @@ func createDirIfNotExist(dir string) {
 			fmt.Println("Error creating directory:", err)
 		}
 	}
+
 }

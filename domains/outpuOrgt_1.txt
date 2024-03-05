@@ -13886,7 +13886,6 @@
 12fixeswellness.org
 12fixhealth.org
 12fly.org
-12foid.org
 12footdinghy.org
 12foottravels.org
 12for12for12.org
@@ -15135,7 +15134,6 @@
 13864.org
 13866.org
 138678.org
-13869.org
 138700.org
 13874.org
 13876.org

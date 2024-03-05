@@ -4383,7 +4383,6 @@
 75834.org
 75837.org
 75838.org
-75840.org
 758413.org
 75842.org
 75843.org
@@ -10669,7 +10668,6 @@
 80percent4wi.org
 80percentarms.org
 80percentbuilder.org
-80percentforum.org
 80percentmedia.org
 80percentmovement.org
 80percentparty.org
@@ -14933,7 +14931,6 @@
 88808.org
 8881.org
 888111.org
-88812.org
 88813.org
 88814.org
 88815.org
